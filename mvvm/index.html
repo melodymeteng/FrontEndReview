@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <div id="app">
+      <h3>姓名</h3>
+      <p>{{name}}</p>
+      <h3>年龄</h3>
+      <p>{{age}}</p>
+    </div>
+  </body>
+</html>
+<script>
+  document.addEventListener(
+    'DOMContentLoaded',
+    function () {
+      let opt = { el: '#app', data: { name: '检索中...', age: 30 } };
+      let vm = new Vue(opt);
+      setTimeout(() => {
+        opt.data.name = '憨批';
+      }, 2000);
+    },
+    false
+  );
+  /*
+    1、通过Object.defineProperty对data进行数据劫持
+    2、setter/getter中用data['_'+key]来代理data[key]，防止return data[key]时再次调用getter，一直调用导致栈溢出（数据代理）
+    3、compile对{{}}的内容进行数据编译
+    4、Observer类就是一个发布订阅，通过getter订阅每个数据的初始状态，通过setter发布每个数据的更新
+    5、这个时候如果更改了opt.data中的任何一个属性值，都会触发set，就会导致数据更改从而更新视图，达到了双向绑定的效果
+  */
+  class Vue {
+    constructor(opt) {
+      this.opt = opt;
+      this.observe(opt.data);
+      let root = document.querySelector(opt.el);
+      this.compile(root);
+    }
+    // 为响应式对象 data 里的每一个 key 绑定一个观察者对象
+    observe(data) {
+      Object.keys(data).forEach((key) => {
+        let obv = new Observer();
+        data['_' + key] = data[key];
+        // 通过 getter setter 暴露 for 循环中作用域下的 obv，闭包产生
+        Object.defineProperty(data, key, {
+          get() {
+            console.log('get',Observer.target,data['_' + key]);
+            Observer.target && obv.addSubNode(Observer.target);
+            return data['_' + key];
+          },
+          set(newVal) {
+            console.log('set',newVal);
+            obv.update(newVal);
+            data['_' + key] = newVal;
+          },
+        });
+      });
+    }
+    // 初始化页面，遍历 DOM，收集每一个key变化时，随之调整的位置，以观察者方法存放起来
+    compile(node) {
+      [].forEach.call(node.childNodes, (child) => {
+        if (!child.firstElementChild && /\{\{(.*)\}\}/.test(child.innerHTML)) {
+          //RegExp.$1指的是与正则表达式匹配的第一个 子匹配(以括号为标志)字符串（就是这个/\{\{(.*)\}\}/表达式匹配出来的第一个结果）
+          let key = RegExp.$1.trim();
+          console.log('key', child.innerHTML);
+          child.innerHTML = child.innerHTML.replace(
+            new RegExp('\\{\\{\\s*' + key + '\\s*\\}\\}', 'gm'),
+            this.opt.data[key]
+          );
+          console.log('replace',this.opt.data,child)
+          Observer.target = child;
+          //执行this.opt.data[key]会触发get然后将节点push到Observer中的subNode数组中
+          this.opt.data[key];
+          //然后执行Observer.target = null，将target释放出来，为下一个子节点的push做准备
+          Observer.target = null;
+        } else if (child.firstElementChild) this.compile(child);
+      });
+    }
+  }
+  // 常规观察者类
+  class Observer {
+    constructor() {
+      this.subNode = [];
+    }
+    addSubNode(node) {
+      this.subNode.push(node);
+    }
+    update(newVal) {
+      this.subNode.forEach((node) => {
+        node.innerHTML = newVal;
+      });
+    }
+  }
+  // var a = function () {
+  //   for (var i = 0; i < 10; i++) {
+  //     setTimeout(function () {
+  //       console.log(i);
+  //     }, 1000);
+  //   }
+  // };
+</script>

@@ -1,0 +1,29 @@
+Array.prototype.ARRAY_FILTER = function(callbackFn, thisArg) {
+  //this指向的就是原数组
+  //判断数组异常
+  if (this === null || this === undefined) {
+    throw new TypeError("Cannot read protype 'map' of null or undefined");
+  }
+  //处理回调异常
+  if (Object.prototype.toString.call(callbackFn) != '[object Function]') {
+    throw new TypeError(callbackFn + 'is not a function');
+  }
+  //根据ecma262草案先把原数组转为对象
+  let O = Object(this);
+  let T = thisArg || this;
+  //右移0位；保证len是数字且是整数
+  let len = O.length >>> 0;
+  let newA = new Array();
+  let newLen = 0;
+  for (let i = 0; i < len; i++) {
+    //in 在原型链上查找更准确
+    if (i in O) {
+      let iValue = O[i];
+      //依次给回调函数传入当前值、索引、原数组
+      if (callbackFn(iValue, i, O)) {
+        newA[newLen++] = iValue;
+      }
+    }
+  }
+  return newA;
+};
