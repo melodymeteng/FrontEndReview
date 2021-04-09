@@ -9,7 +9,7 @@ class EventBus {
             this.events[event] = [];
         }
         if (this.events[event].length > this.max) {
-            console.log("超过最大监听");
+            console.warn("xxx最大了");
             return this;
         }
         this.events[event].push(cb);
@@ -17,12 +17,13 @@ class EventBus {
     }
 
     emit(event, ...args) {
-        if (this.events[event] === null) {
-            console.log("监听已取消");
-            return this;
+        let cbs = this.events[event];
+        if (cbs === null) {
+            console.log("时间已移除");
         } else {
-            this.events[event].forEach((cb) => cb.apply(this, args));
+            cbs.forEach((item) => item.apply(this, args));
         }
+
         return this;
     }
 
@@ -39,7 +40,7 @@ class EventBus {
         if (!cb) {
             this.events[event] = null;
         } else {
-            this.events[event] = this.events[event].filter((item) => item !== cb);
+            this.events[event] = this.events[event].filter((item) => item != cb);
         }
         return this;
     }

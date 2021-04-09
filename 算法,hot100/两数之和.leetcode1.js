@@ -36,4 +36,14 @@ var twoSum = function (nums, target) {
 输出：[0,1]
  */
 
-var twoSum = function (nums, target) {};
+var twoSum = function (nums, target) {
+    let map = new Map();
+    for (let i = 0; i < nums.length; i++) {
+        if (map.get(target - nums[i])) {
+            return [map.get(target - nums[i]), i];
+        } else {
+            map.set(nums[i], i);
+        }
+    }
+    return [];
+};

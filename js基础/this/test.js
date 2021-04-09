@@ -2,7 +2,7 @@ Function.prototype.myCall = function (context) {
     context = context || window;
     context.fn = this;
     var args = [];
-    for (var i = 0; i < arguments.length; i++) {
+    for (var i = 1; i < arguments.length; i++) {
         args.push("arguments[" + i + "]");
     }
     var res = eval("context.fn(" + args + ")");
@@ -14,7 +14,7 @@ Function.prototype.myApply = function (context, arr) {
     context = context || window;
     context.fn = this;
     var res;
-    if (!arr || arr.length === 0 || Object.prototype.toString.call(arr) !== "[object Array]") {
+    if (Object.prototype.toString.call(arr) !== "[object Array]") {
         res = context.fn();
     } else {
         var args = [];
@@ -28,19 +28,17 @@ Function.prototype.myApply = function (context, arr) {
 };
 
 Function.prototype.myBind = function (context) {
-    if (Object.prototype.toString.call(this) !== "[object Function]") {
-        throw Error("xxxx");
-    }
+    if (typeof this !== "function") throw Error("xxxx");
     context = context || window;
     var self = this;
-    var args = Array.prototype.slice.call(arguments,1);
+    var args = Array.prototype.slice.call(arguments, 1);
     var Func = function () {
         var bindArgs = Array.prototype.slice.call(arguments);
         return self.apply(this instanceof Func ? this : context, args.concat(bindArgs));
     };
-    var NullFun = function () {};
-    NullFun.prototype = self.prototype;
-    Func.prototype = new NullFun();
+    var NullFunc = function () {};
+    NullFunc.prototype = self.prototype;
+    Func.prototype = new NullFunc();
     return Func;
 };
 
@@ -53,8 +51,8 @@ function myNew() {
 }
 
 function myInstanceof(left, right) {
-    if (Object.prototype.toString.call(left) !== "[object Object]" || left === null) return false;
-    if (Object.prototype.toString.call(right) !== "[object Function]") throw Error("xxx");
+    if (typeof right !== "function") throw Error("xxxx");
+    if (typeof left !== "object" || left === null) return false;
     var l = left.__proto__;
     var r = right.prototype;
     while (l || r) {

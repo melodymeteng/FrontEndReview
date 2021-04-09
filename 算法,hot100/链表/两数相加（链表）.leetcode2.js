@@ -1,4 +1,3 @@
-
 /**
  * Definition for singly-linked list.
  * function ListNode(val, next) {
@@ -73,8 +72,22 @@ function ListNode(val, next) {
 题目数据保证列表表示的数字不含前导零
 */
 function ListNode(val, next) {
-    
+    this.val = val === undefined ? 0 : val;
+    this.next = next === undefined ? null : next;
 }
 var addTwoNumbers = function (l1, l2) {
-    
+    let res = new ListNode();
+    let head = res;
+    let addNum = 0;
+    while (l1 || l2 || addNum) {
+        let val1 = l1 === null ? 0 : l1.val;
+        let val2 = l2 === null ? 0 : l2.val;
+        let sum = val1 + val2 + addNum;
+        addNum = sum >= 10 ? 1 : 0;
+        res.next = new ListNode(sum % 10);
+        res = res.next;
+        if (l1) l1 = l1.next;
+        if (l2) l2 = l2.next;
+    }
+    return head.next;
 };

@@ -9,8 +9,8 @@
  * @returns 
  */
 const myInstanceof = function(left,right){
-    if(typeof left !== 'object'||left === null) return false
     if(typeof right !== 'function') return new Error('...')
+    if(typeof left !== 'object'||left === null) return false
     let lProto = left.__proto__;
     let rProto = right.prototype;
     while(lProto){

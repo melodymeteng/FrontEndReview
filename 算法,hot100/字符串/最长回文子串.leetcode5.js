@@ -24,4 +24,6 @@
  * @param {string} s
  * @return {string}
  */
-var longestPalindrome = function (s) {};
+var longestPalindrome = function (s) {
+    
+};

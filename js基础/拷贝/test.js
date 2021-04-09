@@ -1,22 +1,24 @@
 function simpleDeepClone(obj, map = new WeakMap()) {
-    if (typeof obj !== "object" || typeof obj !== "function" || obj === null) return obj;
+    if (typeof obj !== "object" || obj === null) return obj;
     if (map.has(obj)) return map.get(obj);
     let cloneObj = Array.isArray(obj) ? [] : {};
     map.set(obj, cloneObj);
     for (let key in obj) {
-        cloneObj[key] = typeof obj[key] === "object" && typeof obj[key] !== "function" ? simpleDeepClone(obj[key], map) : obj[key];
+        cloneObj[key] = typeof obj[key] === "object" ? simpleDeepClone(obj[key], map) : obj[key];
     }
+    return cloneObj;
 }
 
-function deepClone(obj, map = new Map()) {
+function deepClone(obj, map = new WeakMap()) {
     if (obj === null) return obj;
     if (map.has(obj)) return map.get(obj);
-    const tag = [Map, Set, WeakMap, WeakSet, Error, Date, RegExp];
-    if (tag.includes(obj.constructor)) return new obj.constructor(obj);
-    const allDes = Object.getOwnPropertyDescriptors(obj);
-    let cloneObj = Object.create(Object.getPrototypeOf(obj), allDes);
+    const tag = [Set, Map, WeakMap, WeakSet, Date, Error, RegExp];
+    if (tag.includes(obj.consturctor)) return new obj.consturctor(obj);
+    const allDesc = Object.getOwnPropertyDescriptors(obj);
+    let cloneObj = Object.create(Object.getPrototypeOf(obj), allDesc);
     map.set(obj, cloneObj);
     for (let key of Reflect.ownKeys(obj)) {
         cloneObj[key] = typeof obj[key] === "object" && typeof obj[key] !== "function" ? deepClone(obj[key], map) : obj[key];
     }
+    return cloneObj;
 }

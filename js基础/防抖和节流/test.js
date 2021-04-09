@@ -1,15 +1,10 @@
 function debounce(fn, wait, nowFlag) {
     let timer;
     return function () {
-        if (timer) {
-            timer = null;
-            clearTimeout(timer);
-        }
+        if (timer) clearTimeout(timer);
         if (nowFlag === true) {
             let callnow = !timer;
-            timer = setTimeout(() => {
-                timer = null;
-            }, wait);
+            timer = setTimeout(() => (timer = null), wait);
             if (callnow === true) fn.apply(this, arguments);
         } else {
             timer = setTimeout(() => {
@@ -20,12 +15,12 @@ function debounce(fn, wait, nowFlag) {
 }
 
 function throttle1(fn, wait) {
-    let preTime = 0;
+    let preTime;
     return function () {
         let now = +new Date();
-        if (wait < now - preTime) {
+        if (wait <= now - preTime) {
             preTime = now;
-            fn.apply(this);
+            fn.apply(this, arguments);
         }
     };
 }
@@ -33,10 +28,12 @@ function throttle1(fn, wait) {
 function throttle2(fn, wait) {
     let timer;
     return function () {
+        const context = this;
+        const args = arguments;
         if (!timer) {
-            timer = setTimeout(() => {
+            timer = setTimeout(function () {
                 timer = null;
-                fn.apply(this, arguments);
+                fn.apply(context, args);
             }, wait);
         }
     };
@@ -47,6 +44,8 @@ function throttle3(fn, wait) {
         preTime = 0;
     return function () {
         let now = +new Date();
+        const context = this;
+        const args = arguments;
         let mainTime = wait - (now - preTime);
         if (mainTime <= 0) {
             preTime = now;
@@ -54,12 +53,12 @@ function throttle3(fn, wait) {
                 clearTimeout(timer);
                 timer = null;
             }
-            fn.apply(this, arguments);
+            fn.apply(context, args);
         } else if (!timer) {
-            timer = setTimeout(() => {
-                timer = null;
+            timer = setTimeout(function () {
                 preTime = +new Date();
-                fn.apply(this, arguments);
+                timer = null;
+                fn.apply(context, args);
             }, mainTime);
         }
     };
@@ -70,7 +69,9 @@ function throttle4(fn, wait, option) {
         preTime = 0;
     return function () {
         let now = +new Date();
-        if (!preTime && option.first === false) preTime = now;
+        const context = this;
+        const args = arguments;
+        if (option.first === false && preTime === 0) preTime = now;
         let mainTime = wait - (now - preTime);
         if (mainTime <= 0) {
             preTime = now;
@@ -78,12 +79,12 @@ function throttle4(fn, wait, option) {
                 clearTimeout(timer);
                 timer = null;
             }
-            fn.apply(this, arguments);
+            fn.apply(context, args);
         } else if (!timer && option.last === true) {
-            timer = setTimeout(() => {
-                timer = null;
+            timer = setTimeout(function () {
                 preTime = option.first === false ? 0 : +new Date();
-                fn.apply(this, arguments);
+                timer = null;
+                fn.apply(context, args);
             }, mainTime);
         }
     };

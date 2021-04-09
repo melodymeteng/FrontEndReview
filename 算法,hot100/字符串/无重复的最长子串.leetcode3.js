@@ -1,4 +1,3 @@
-
 /**
  * @param {string} s
  * @return {number}
@@ -50,5 +49,15 @@ var lengthOfLongestSubstring = function (s) {
 // 0 <= s.length <= 5 * 104
 // s 由英文字母、数字、符号和空格组成
 var lengthOfLongestSubstring = function (s) {
-   
+    let arr = [];
+    let max = 0;
+    for (let i = 0; i < s.length; i++) {
+        let index = arr.indexOf(s[i]);
+        if (index !== -1) {
+            arr.splice(0, index + 1);
+        }
+        arr.push(s.charAt(i));
+        max = Math.max(max, arr.length);
+    }
+    return max
 };

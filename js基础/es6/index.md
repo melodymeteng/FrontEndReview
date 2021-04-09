@@ -10,7 +10,7 @@
 
 ## 6、模板字符串 var a = 1 `cxcccc${a}ss` --> cxcccc1ss
 
-## 7、箭头函数 => 箭头函数的 this 是在创建箭头函数时就被绑定了（指向创建时的作用域、对象），并且不可以被修改 this 指向，所以箭头函数无法被 new，并且没有 arguments。
+## 7、箭头函数 => 箭头函数的 this 是在创建箭头函数时就被绑定了（指向创建时的作用域、对象），并且this不可以被修改，所以箭头函数无法被 new，并且没有 arguments。
 
 ## 8、新增 Symbol 基本类型。符号，不是构造器，不能 new，typeof 会返回 'symbol'，主要用来创建一个类似于字符串但是不会和其他任何值冲突的值。
 ## Symbol.for(xxx)会在全局注册的 symbol 里找有没有这个值，有就返回没有就创建。Symbol.keyFor(xxx)取值。
@@ -21,7 +21,7 @@
 
 ## 10、模块
 
-## (1)而以前的 CommonJS。使用 exports/moudle.export 导出，require 导入。require 是同步加载，因此 CommonJS 在 node 端使用，前端使用会导致阻塞
+## (1)以前的 CommonJS。使用 exports/moudle.export 导出，require 导入。require 是同步加载，因此 CommonJS 在 node 端使用，前端使用会导致阻塞
 
 ## (2)AMD 主要就是为了异步加载模块。也是通过 require 导入，并且依赖前置，提前执行。也就是向 define 方法传入模块时就开始加载并执行
 

@@ -1,8 +1,8 @@
 function timeLog(target, name, descriptor) {
     const val = descriptor.value;
-    descriptor.value = async function () {
+    descriptor.value = function (...args) {
         console.time(name);
-        const res = await val.apply(this, arguments);
+        const res = val.apply(this, args);
         console.timeEnd(name);
         return res;
     };
@@ -12,16 +12,13 @@ function timeLog(target, name, descriptor) {
 function checkWebp() {
     try {
         return document.createElement("canvas").toDataURL("image/webp").indexOf("data:image/webp") === 0;
-    } catch {
+    } catch (error) {
         return false;
     }
 }
-
-const supportWebp = checkWebp();
-
 function transferWebp(url) {
-    if (!url) return;
-    if (url.indexOf("data:") === 0 || supportWebp === false) return url;
+    if (!url) throw Error("xxx");
+    if (url.indexOf("data:") === 0 || checkWebp() === false) return url;
     return url + ".webp";
 }
 
@@ -36,7 +33,7 @@ function loadLimit(arr, handler, limit) {
     let p = Promise.race(promiseArr);
     for (let i = 0; i < cArr.length; i++) {
         p = p.then((value) => {
-            promiseArr[value] = handler(cArr[i]).then(() => {
+            promiseArr[i] = handler(cArr[i]).then(() => {
                 return value;
             });
             return Promise.race(promiseArr);

@@ -23,7 +23,7 @@ no-store：不可以缓存
 
 tag分为两种：
 
-1.Last-Modified/If-Modified。
+1.Last-Modified/If-Modified-Since。
 当浏览器第一次给服务端发送请求后，服务端会在响应头中加上Last-Modified表明资源的最新修改时间，当浏览器第二次请求服务端时会在请求头中带上If-Modified-Since，服务端拿到If-Modified-Since后与Last-Modified对比，如果一致表明服务端的资源还是最新的，那么就返回状态码304使用缓存，表示资源不需要更新，如果对比不一致，那么服务端会返回最新的资源，状态码200。
 
 2.ETag/If-None-Match。
